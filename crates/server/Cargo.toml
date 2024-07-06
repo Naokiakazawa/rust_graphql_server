@@ -4,4 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+futures = "0.3.30"
+sea-orm = { version = "0.12.15", features = ["sqlx-postgres", "runtime-tokio-rustls", "debug-print"] }
 utils = { path = "../utils" }
+migration = { path = "./migration" }
