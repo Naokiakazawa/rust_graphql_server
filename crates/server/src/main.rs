@@ -35,7 +35,7 @@ async fn establish_db_connection() -> Result<DatabaseConnection, DbErr> {
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
+        .with_max_level(tracing::Level::TRACE)
         .with_test_writer()
         .init();
     match dotenv() {
