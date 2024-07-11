@@ -51,7 +51,7 @@ async fn main() -> Result<(), std::io::Error> {
 
     let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
 
-    tracing::info!("GraphiQL IDE: {:?}:{:?}", server_url, server_port);
+    tracing::info!("GraphiQL IDE: {:}:{:}", server_url, server_port);
 
     HttpServer::new(move || {
         App::new()
