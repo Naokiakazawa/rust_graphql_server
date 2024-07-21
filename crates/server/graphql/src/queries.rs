@@ -1,6 +1,9 @@
 use crate::models;
 use async_graphql::{Context, Object, Result};
-use entities::{post, post::Entity as Post};
+use entities::{
+    comments, comments::Entity as Comment, posts, posts::Entity as Post, users,
+    users::Entity as User,
+};
 use sea_orm::*;
 
 pub struct QueryRoot;
@@ -16,17 +19,18 @@ impl QueryRoot {
         id: i32,
     ) -> Result<Option<models::PostModel>, DbErr> {
         let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
-        let post: Option<entities::post::Model> = Post::find_by_id(id).one(db).await?;
-        Ok(post.map(|p: entities::post::Model| p.into()))
+        let post: Option<entities::posts::Model> = Post::find_by_id(id).one(db).await?;
+        Ok(post.map(|p: entities::posts::Model| p.into()))
     }
 }
 
-impl From<post::Model> for models::PostModel {
-    fn from(model: post::Model) -> Self {
+impl From<posts::Model> for models::PostModel {
+    fn from(model: posts::Model) -> Self {
         models::PostModel {
             id: model.id,
             title: model.title,
-            content: model.text,
+            content: model.content,
+            user_id: model.user_id,
         }
     }
 }

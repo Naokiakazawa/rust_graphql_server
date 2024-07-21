@@ -2,4 +2,6 @@
 
 pub mod prelude;
 
-pub mod post;
+pub mod comments;
+pub mod posts;
+pub mod users;
