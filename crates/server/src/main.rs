@@ -1,24 +1,23 @@
 use actix_web::{guard, web, App, HttpResponse, HttpServer, Result};
-use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Object, Schema};
+use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use dotenvy::dotenv;
+use sea_orm::DatabaseConnection;
 use std::env;
 
+use graphql::queries::QueryRoot;
+use graphql::schema::AppSchema;
 use infrastructure::database::establish_db_connection;
 
-struct QueryRoot;
-
-#[Object]
-impl QueryRoot {
-    async fn hello(&self) -> String {
-        "Hello, world!".to_string()
-    }
-}
-
-type AppSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
-
-async fn index(schema: web::Data<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+async fn index(
+    schema: web::Data<AppSchema>,
+    req: GraphQLRequest,
+    db: web::Data<DatabaseConnection>,
+) -> GraphQLResponse {
+    schema
+        .execute(req.into_inner().data(db.clone()))
+        .await
+        .into()
 }
 
 async fn index_graphiql() -> Result<HttpResponse> {
@@ -37,20 +36,32 @@ async fn main() -> Result<(), std::io::Error> {
         Ok(_) => tracing::info!("Loaded .env file"),
         Err(e) => tracing::error!("Failed to load .env file: {}", e),
     }
-    match establish_db_connection().await {
-        Ok(db) => tracing::info!("Connected to database: {:?}", db),
-        Err(e) => tracing::error!("Failed to connect to database: {:?}", e),
-    }
+    let db = match establish_db_connection().await {
+        Ok(db) => {
+            tracing::info!("Connected to database");
+            db
+        }
+        Err(e) => {
+            tracing::error!("Failed to connect to database: {:?}", e);
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                e.to_string(),
+            ));
+        }
+    };
     let server_url: String = env::var("SERVER_URL").unwrap();
     let server_port: String = env::var("SERVER_PORT").unwrap();
 
-    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
+    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+        .data(db.clone())
+        .finish();
 
     tracing::info!("GraphiQL IDE: http://localhost:{}", server_port);
 
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(schema.clone()))
+            .app_data(web::Data::new(db.clone()))
             .service(web::resource("/graphql").guard(guard::Post()).to(index))
             .service(web::resource("/").guard(guard::Get()).to(index_graphiql))
     })
