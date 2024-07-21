@@ -14,7 +14,7 @@ impl QueryRoot {
         "Hello, world!".to_string()
     }
 
-    async fn blog_post(
+    async fn post(
         &self,
         ctx: &Context<'_>,
         id: i32,
