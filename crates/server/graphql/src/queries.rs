@@ -14,11 +14,7 @@ impl QueryRoot {
         "Hello, world!".to_string()
     }
 
-    async fn post(
-        &self,
-        ctx: &Context<'_>,
-        id: i32,
-    ) -> Result<Option<models::PostModel>, DbErr> {
+    async fn post(&self, ctx: &Context<'_>, id: i32) -> Result<Option<models::PostModel>, DbErr> {
         let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
         let post: Option<entities::posts::Model> = Post::find_by_id(id).one(db).await?;
         Ok(post.map(|p: entities::posts::Model| p.into()))
