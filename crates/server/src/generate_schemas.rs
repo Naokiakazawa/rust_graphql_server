@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::Write;
 
 use async_graphql::*;
@@ -10,14 +10,19 @@ fn main() {
         Schema::build(QueryRoot, MutationRoot, EmptySubscription).finish();
     let sdl: String = schema.sdl();
 
-    match File::create("schema.graphql") {
+    match OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open("schema.graphql")
+    {
         Ok(mut file) => {
             if let Err(e) = file.write_all(sdl.as_bytes()) {
-                eprintln!("Failed to write to file: {}", e);
+                eprintln!("ファイルへの書き込みに失敗しました: {}", e);
             }
         }
         Err(e) => {
-            eprintln!("Failed to create file: {}", e);
+            eprintln!("ファイルの作成に失敗しました: {}", e);
         }
     }
 }

@@ -21,6 +21,7 @@ input CreatePostInput {
 input CreateUserInput {
 	username: String!
 	email: String!
+	passwordHash: String!
 }
 
 input DeleteCommentInput {
@@ -80,6 +81,7 @@ input UpdateUserInput {
 	id: Int!
 	username: String
 	email: String
+	passwordHash: String
 }
 
 type UserModel {

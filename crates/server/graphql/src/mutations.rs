@@ -113,6 +113,7 @@ impl MutationRoot {
         let new_user = users::ActiveModel {
             username: Set(input.username),
             email: Set(input.email),
+            password_hash: Set(input.password_hash),
             ..Default::default()
         };
         let res: InsertResult<users::ActiveModel> = User::insert(new_user).exec(db).await?;
@@ -132,6 +133,9 @@ impl MutationRoot {
         }
         if let Some(email) = input.email {
             user.email = Set(email);
+        }
+        if let Some(password_hash) = input.password_hash {
+            user.password_hash = Set(password_hash);
         }
         let res: users::Model = user.update(db).await?;
         Ok(res.id)

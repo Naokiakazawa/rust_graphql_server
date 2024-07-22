@@ -38,6 +38,7 @@ pub struct UserModel {
 pub struct CreateUserInput {
     pub username: String,
     pub email: String,
+    pub password_hash: String,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, InputObject)]
@@ -45,6 +46,7 @@ pub struct UpdateUserInput {
     pub id: i32,
     pub username: Option<String>,
     pub email: Option<String>,
+    pub password_hash: Option<String>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, InputObject)]
