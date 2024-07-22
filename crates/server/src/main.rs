@@ -1,10 +1,11 @@
 use actix_web::{guard, web, App, HttpResponse, HttpServer, Result};
-use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{http::GraphiQLSource, EmptySubscription, Schema};
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use dotenvy::dotenv;
 use sea_orm::DatabaseConnection;
 use std::env;
 
+use graphql::mutations::MutationRoot;
 use graphql::queries::QueryRoot;
 use graphql::schema::AppSchema;
 use infrastructure::database::establish_db_connection;
@@ -23,7 +24,7 @@ async fn index(
 async fn index_graphiql() -> Result<HttpResponse> {
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
-        .body(GraphiQLSource::build().endpoint("/").finish()))
+        .body(GraphiQLSource::build().endpoint("/graphql").finish()))
 }
 
 #[actix_web::main]
@@ -52,7 +53,7 @@ async fn main() -> Result<(), std::io::Error> {
     let server_url: String = env::var("SERVER_URL").unwrap();
     let server_port: String = env::var("SERVER_PORT").unwrap();
 
-    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+    let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .data(db.clone())
         .finish();
 
@@ -63,7 +64,7 @@ async fn main() -> Result<(), std::io::Error> {
             .app_data(web::Data::new(schema.clone()))
             .app_data(web::Data::new(db.clone()))
             .service(web::resource("/graphql").guard(guard::Post()).to(index))
-            .service(web::resource("/").guard(guard::Get()).to(index_graphiql))
+            .service(web::resource("/graphql").guard(guard::Get()).to(index_graphiql))
     })
     .bind(format!("{}:{}", server_url, server_port))?
     .run()
