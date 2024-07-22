@@ -30,7 +30,7 @@ async fn index_graphiql() -> Result<HttpResponse> {
 #[actix_web::main]
 async fn main() -> Result<(), std::io::Error> {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::TRACE)
+        .with_max_level(tracing::Level::DEBUG)
         .with_test_writer()
         .init();
     match dotenv() {
@@ -57,7 +57,7 @@ async fn main() -> Result<(), std::io::Error> {
         .data(db.clone())
         .finish();
 
-    tracing::info!("GraphiQL IDE: http://localhost:{}", server_port);
+    tracing::info!("GraphiQL IDE: http://localhost:{}/graphql", server_port);
 
     HttpServer::new(move || {
         App::new()
