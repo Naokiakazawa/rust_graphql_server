@@ -1,4 +1,5 @@
+use crate::mutations::MutationRoot;
 use crate::queries::QueryRoot;
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{EmptySubscription, Schema};
 
-pub type AppSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
+pub type AppSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;
