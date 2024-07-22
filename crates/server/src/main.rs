@@ -64,7 +64,11 @@ async fn main() -> Result<(), std::io::Error> {
             .app_data(web::Data::new(schema.clone()))
             .app_data(web::Data::new(db.clone()))
             .service(web::resource("/graphql").guard(guard::Post()).to(index))
-            .service(web::resource("/graphql").guard(guard::Get()).to(index_graphiql))
+            .service(
+                web::resource("/graphql")
+                    .guard(guard::Get())
+                    .to(index_graphiql),
+            )
     })
     .bind(format!("{}:{}", server_url, server_port))?
     .run()

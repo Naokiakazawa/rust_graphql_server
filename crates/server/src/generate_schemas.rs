@@ -5,7 +5,6 @@ use async_graphql::*;
 use graphql::mutations::MutationRoot;
 use graphql::queries::QueryRoot;
 
-
 fn main() {
     let schema: Schema<QueryRoot, MutationRoot, EmptySubscription> =
         Schema::build(QueryRoot, MutationRoot, EmptySubscription).finish();
@@ -22,4 +21,3 @@ fn main() {
         }
     }
 }
-
