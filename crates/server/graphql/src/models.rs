@@ -8,6 +8,12 @@ pub struct PostModel {
     pub user_id: i32,
 }
 
+#[derive(Debug, Clone, Eq, PartialEq, SimpleObject)]
+pub struct PaginatedPosts {
+    pub total_pages: u64,
+    pub posts: Vec<PostModel>,
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, InputObject)]
 pub struct CreatePostInput {
     pub title: String,
@@ -32,6 +38,12 @@ pub struct UserModel {
     pub id: i32,
     pub username: String,
     pub email: String,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, SimpleObject)]
+pub struct PaginatedUsers {
+    pub total_pages: u64,
+    pub users: Vec<UserModel>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, InputObject)]
@@ -60,6 +72,12 @@ pub struct CommentModel {
     pub content: String,
     pub post_id: i32,
     pub user_id: i32,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, SimpleObject)]
+pub struct PaginatedComments {
+    pub total_pages: u64,
+    pub comments: Vec<CommentModel>,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, InputObject)]

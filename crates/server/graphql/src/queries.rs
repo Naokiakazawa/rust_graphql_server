@@ -20,10 +20,54 @@ impl QueryRoot {
         Ok(post.map(|p: entities::posts::Model| p.into()))
     }
 
+    async fn posts(&self, ctx: &Context<'_>) -> Result<Vec<models::PostModel>, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let posts = Post::find().all(db).await?;
+        Ok(posts.into_iter().map(|p| p.into()).collect())
+    }
+
+    async fn posts_per_page(
+        &self,
+        ctx: &Context<'_>,
+        page: u64,
+        page_size: u64,
+    ) -> Result<models::PaginatedPosts, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let paginator = Post::find().paginate(db, page_size);
+        let num_pages: u64 = paginator.num_pages().await?;
+        let posts: Vec<posts::Model> = paginator.fetch_page(page - 1).await?;
+        Ok(models::PaginatedPosts {
+            total_pages: num_pages,
+            posts: posts.into_iter().map(|p| p.into()).collect(),
+        })
+    }
+
     async fn user(&self, ctx: &Context<'_>, id: i32) -> Result<Option<models::UserModel>, DbErr> {
         let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
         let user: Option<entities::users::Model> = User::find_by_id(id).one(db).await?;
         Ok(user.map(|u: entities::users::Model| u.into()))
+    }
+
+    async fn users(&self, ctx: &Context<'_>) -> Result<Vec<models::UserModel>, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let users = User::find().all(db).await?;
+        Ok(users.into_iter().map(|u| u.into()).collect())
+    }
+
+    async fn users_per_page(
+        &self,
+        ctx: &Context<'_>,
+        page: u64,
+        page_size: u64,
+    ) -> Result<models::PaginatedUsers, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let paginator = User::find().paginate(db, page_size);
+        let num_pages: u64 = paginator.num_pages().await?;
+        let users: Vec<users::Model> = paginator.fetch_page(page - 1).await?;
+        Ok(models::PaginatedUsers {
+            total_pages: num_pages,
+            users: users.into_iter().map(|u| u.into()).collect(),
+        })
     }
 
     async fn comment(
@@ -34,6 +78,28 @@ impl QueryRoot {
         let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
         let comment: Option<entities::comments::Model> = Comment::find_by_id(id).one(db).await?;
         Ok(comment.map(|c: entities::comments::Model| c.into()))
+    }
+
+    async fn comments(&self, ctx: &Context<'_>) -> Result<Vec<models::CommentModel>, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let comments = Comment::find().all(db).await?;
+        Ok(comments.into_iter().map(|c| c.into()).collect())
+    }
+
+    async fn comments_per_page(
+        &self,
+        ctx: &Context<'_>,
+        page: u64,
+        page_size: u64,
+    ) -> Result<models::PaginatedComments, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let paginator = Comment::find().paginate(db, page_size);
+        let num_pages: u64 = paginator.num_pages().await?;
+        let comments: Vec<comments::Model> = paginator.fetch_page(page - 1).await?;
+        Ok(models::PaginatedComments {
+            total_pages: num_pages,
+            comments: comments.into_iter().map(|c| c.into()).collect(),
+        })
     }
 }
 
