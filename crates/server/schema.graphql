@@ -51,6 +51,21 @@ type MutationRoot {
 	deleteUser(input: DeleteUserInput!): Int!
 }
 
+type PaginatedComments {
+	totalPages: Int!
+	comments: [CommentModel!]!
+}
+
+type PaginatedPosts {
+	totalPages: Int!
+	posts: [PostModel!]!
+}
+
+type PaginatedUsers {
+	totalPages: Int!
+	users: [UserModel!]!
+}
+
 type PostModel {
 	id: Int!
 	title: String!
@@ -61,8 +76,14 @@ type PostModel {
 type QueryRoot {
 	hello: String!
 	post(id: Int!): PostModel
+	posts: [PostModel!]!
+	postsPerPage(page: Int!, pageSize: Int!): PaginatedPosts!
 	user(id: Int!): UserModel
+	users: [UserModel!]!
+	usersPerPage(page: Int!, pageSize: Int!): PaginatedUsers!
 	comment(id: Int!): CommentModel
+	comments: [CommentModel!]!
+	commentsPerPage(page: Int!, pageSize: Int!): PaginatedComments!
 }
 
 
