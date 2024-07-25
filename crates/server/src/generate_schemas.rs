@@ -18,11 +18,11 @@ fn main() {
     {
         Ok(mut file) => {
             if let Err(e) = file.write_all(sdl.as_bytes()) {
-                eprintln!("ファイルへの書き込みに失敗しました: {}", e);
+                eprintln!("Failed to write: {}", e);
             }
         }
         Err(e) => {
-            eprintln!("ファイルの作成に失敗しました: {}", e);
+            eprintln!("Failed to create file: {}", e);
         }
     }
 }
