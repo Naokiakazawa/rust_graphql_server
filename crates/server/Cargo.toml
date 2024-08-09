@@ -6,7 +6,7 @@ default-run = "server"
 
 [dependencies]
 futures = "0.3.30"
-sea-orm = { version = "0.12.15", features = ["sqlx-postgres", "runtime-tokio-rustls", "debug-print"] }
+sea-orm = { version = "1.0.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "debug-print"] }
 utils = { path = "../utils" }
 actix-web = "4.8.0"
 dotenvy = "0.15.7"
