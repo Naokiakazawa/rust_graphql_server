@@ -84,6 +84,7 @@ type QueryRoot {
 	comment(id: Int!): CommentModel
 	comments: [CommentModel!]!
 	commentsPerPage(page: Int!, pageSize: Int!): PaginatedComments!
+	commentsByPostId(postId: Int!): [CommentModel!]!
 }
 
 

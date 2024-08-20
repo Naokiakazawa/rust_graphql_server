@@ -101,7 +101,16 @@ impl QueryRoot {
             comments: comments.into_iter().map(|c| c.into()).collect(),
         })
     }
+
+    async fn comments_by_post_id(&self, ctx: &Context<'_>, post_id: i32) -> Result<Vec<models::CommentModel>, DbErr> {
+        let db: &DatabaseConnection = ctx.data::<DatabaseConnection>().unwrap();
+        let post: Option<posts::Model> = Post::find_by_id(post_id).one(db).await?;
+        let post: posts::Model = post.unwrap();
+        let comments: Vec<comments::Model> = post.find_related(Comment).all(db).await?;
+        Ok(comments.into_iter().map(|c| c.into()).collect())
+    }
 }
+
 
 impl From<posts::Model> for models::PostModel {
     fn from(model: posts::Model) -> Self {
